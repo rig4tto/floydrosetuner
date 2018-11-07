@@ -1,2 +1,2 @@
 # floydrosetuner
-Matematical models for Floyd Rose style bridges and tuning
+Mathematical models for Floyd Rose style bridges and tuning
