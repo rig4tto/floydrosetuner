@@ -14,3 +14,7 @@ http://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#the-pyth
 https://devguide.python.org/documenting/
 http://docutils.sourceforge.net/rst.html
 
+
+## Link to math
+
+http://hyperphysics.phy-astr.gsu.edu/hbase/Waves/string.html
