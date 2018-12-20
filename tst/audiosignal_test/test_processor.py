@@ -17,6 +17,7 @@
 import unittest
 from tst_utils import *
 
+from audiosignal.processor import sin_wave
 from audiosignal.processor import *
 from audiosignal.io import load_wav, dump_signal
 
@@ -36,4 +37,12 @@ class ProcessorTest(unittest.TestCase):
         processor = open_string_guitar_signal_processor(signal.sample_rate)
         signal_pow = processor.fast_power(signal, 0.1)
         dump_signal(signal_pow, path_for_test_output("power_cmaj_scale.samples"))
+
+    def test_to_freq_domain(self):
+        signal = load_wav(path_for_audio_sample("sin440_1sec.wav"))
+        # signal = sin_wave(0.6, 100.0, math.pi/3, 44100, 0.3)
+        processor = SignalProcessor(signal.sample_rate)
+        amplitude, phase = processor.to_freq_domain(signal, freq_step=10)
+        logging.info("energy in frequencies: %r", processor.energetic_frequencies(amplitude))
+        dump_signal(amplitude, path_for_test_output("freq_sin440_1sec.samples"))
 

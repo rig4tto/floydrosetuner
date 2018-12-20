@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import math
 from .signal import Signal
-import logging
+from .generator import sin_wave
+
 
 LOWER_AUDIBLE_FREQUENCY_HZ = 25
 HIGHER_AUDIBLE_FREQUENCY_HZ = 20000
@@ -38,6 +40,9 @@ class SignalProcessor(object):
         self.max_period_length = int(math.ceil(sample_rate / lower_freq))
         self.half_window_size = int(min_window_periods * self.max_period_length)
         self.window_size = 2 * self.half_window_size + 1
+        self.base_sin = [None] * (self.max_period_length - self.min_period_length)
+        self.base_cos = [None] * (self.max_period_length - self.min_period_length)
+        self._prepare_base_sin()
 
     def power(self, signal):
         logging.info("computing power with window_size={} for {} samples, expected iterations "
@@ -76,6 +81,52 @@ class SignalProcessor(object):
             power.extend([power_value] * step)
         power = power[0:len(signal.samples)]
         return Signal(sample_rate=signal.sample_rate, samples=power)
+
+    def _prepare_base_sin(self):
+        logging.info("[starting] prepare base sin for %d functions", self.max_period_length - self.min_period_length)
+        for freq_id in range(0, self.max_period_length - self.min_period_length):
+            period_len = freq_id + self.min_period_length
+            freq_hz = self.sample_rate / period_len
+            self.base_sin[freq_id] = sin_wave(1.0, freq_hz, 0.0, self.sample_rate)
+            self.base_cos[freq_id] = sin_wave(1.0, freq_hz, math.pi/2, self.sample_rate)
+        logging.info("[done] prepare base sin for %d functions", self.max_period_length - self.min_period_length)
+
+    def to_freq_domain(self, signal, freq_step=1):
+        freq_amplitude = [0.0] * (self.max_period_length - self.min_period_length)
+        freq_phase = [0.0] * (self.max_period_length - self.min_period_length)
+        for freq_id in range(0, self.max_period_length - self.min_period_length, freq_step):
+            sin_proj = self.correlation_with_periodic_signal(signal, self.base_sin[freq_id])
+            cos_proj = self.correlation_with_periodic_signal(signal, self.base_cos[freq_id])
+            freq_amplitude[freq_id] = math.sqrt(sin_proj ** 2 + cos_proj ** 2)
+            freq_phase[freq_id] = math.atan2(sin_proj, cos_proj) / math.pi
+        amp = Signal(self.sample_rate, freq_amplitude)
+        phase = Signal(self.sample_rate, freq_phase)
+        return amp, phase
+
+    def energetic_frequencies(self, freq_signal, k=0.99):
+        max_amp = max(freq_signal.samples)
+        threshold = k * max_amp
+        max_freq_ids = [i for i in range(len(freq_signal.samples)) if freq_signal.samples[i] > k * threshold]
+        return [self.sample_rate / (freq_id + self.min_period_length) for freq_id in max_freq_ids]
+
+    def correlation_with_periodic_signal(self, signal, periodic_signal):
+        return sum(self.product_with_periodic_signal(signal, periodic_signal)) / len(signal.samples)
+
+    def product_with_periodic_signal(self, signal, periodic_signal):
+        lps = len(periodic_signal.samples)
+        return [signal.samples[i] * periodic_signal.samples[i % lps] for i in range(len(signal.samples))]
+
+    # def to_freq_domain(self, signal):
+    #     freq_amplitude = [0] * (self.max_period_length - self.min_period_length)
+    #     for freq_id in range(0, self.max_period_length - self.min_period_length):
+    #         freq_amplitude[freq_id] = self.correlation_with_periodic_base(signal, self.base_sin[freq_id],
+    #                                                                       self.base_cos[freq_id])
+    #     return Signal(self.sample_rate, freq_amplitude)
+    #
+    # def correlation_with_periodic_base(self, signal, base1, base2):
+    #     proj1 = self.product_with_periodic_signal(signal, base1)
+    #     proj2 = self.product_with_periodic_signal(signal, base2)
+    #     return sum([math.sqrt(proj1[i]**2 + proj2[i]**2) for i in range(len(signal.samples))]) / len(signal.samples)
 
 
 def open_string_guitar_signal_processor(sample_rate):
