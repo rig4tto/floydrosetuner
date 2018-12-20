@@ -1,4 +1,4 @@
-# floydrosetuner
+# Floyd Rose Tuner
 Mathematical models for Floyd Rose style bridges and tuning
 
 ## Involved technologies
