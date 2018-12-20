@@ -14,25 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-import coverage
-import sys
 import os
-import logging
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO)
+PROJECT_PATH = Path(__file__).parent.parent
 
-sys.path.insert(0, os.path.abspath("tst"))
-sys.path.insert(0, os.path.abspath("src"))
 
-cov = coverage.Coverage()
-cov.start()
+def path_for_test_output(file_name):
+    return os.path.join(PROJECT_PATH, "var/output", file_name)
 
-loader = unittest.TestLoader()
-suite = loader.discover("tst")
-runner = unittest.TextTestRunner()
-runner.run(suite)
 
-cov.stop()
-cov.save()
-cov.html_report()
+def path_for_audio_sample(file_name):
+    return os.path.join(PROJECT_PATH, "audio_samples", file_name)

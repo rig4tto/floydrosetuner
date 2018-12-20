@@ -14,25 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
-import coverage
-import sys
-import os
-import logging
+import math
+from .signal import Signal
 
-logging.basicConfig(level=logging.INFO)
 
-sys.path.insert(0, os.path.abspath("tst"))
-sys.path.insert(0, os.path.abspath("src"))
-
-cov = coverage.Coverage()
-cov.start()
-
-loader = unittest.TestLoader()
-suite = loader.discover("tst")
-runner = unittest.TextTestRunner()
-runner.run(suite)
-
-cov.stop()
-cov.save()
-cov.html_report()
+def sin_wave(amplitude, freq, phase, sample_rate, duration=None):
+    if duration is None:
+        # equal to the period T = 1/freq [s]
+        duration = 1 / freq
+    n_samples = int(duration * sample_rate)
+    omega = 2.0 * math.pi * freq
+    samples = [amplitude * math.sin(phase + omega * float(i) / float(sample_rate))
+               for i in range(0, n_samples)]
+    return Signal(sample_rate=sample_rate, samples=samples)
