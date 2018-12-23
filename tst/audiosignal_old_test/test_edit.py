@@ -18,9 +18,9 @@ import logging
 import unittest
 from tst_utils import *
 
-from audiosignal.edit import *
-from audiosignal.processor import open_string_guitar_signal_processor
-from audiosignal.io import load_wav, dump_signal
+from audiosignal_old.edit import *
+from audiosignal_old.processor import open_string_guitar_signal_processor
+from audiosignal_old.io import load_wav, dump_signal
 
 logging.basicConfig(level=logging.INFO)
 

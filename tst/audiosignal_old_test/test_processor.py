@@ -17,9 +17,9 @@
 import unittest
 from tst_utils import *
 
-from audiosignal.processor import sin_wave
-from audiosignal.processor import *
-from audiosignal.io import load_wav, dump_signal
+from audiosignal_old.processor import sin_wave
+from audiosignal_old.processor import *
+from audiosignal_old.io import load_wav, dump_signal
 
 logging.basicConfig(level=logging.INFO)
 

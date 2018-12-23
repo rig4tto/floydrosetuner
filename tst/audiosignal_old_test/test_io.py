@@ -20,7 +20,7 @@ from tst_utils import *
 
 import math
 
-from audiosignal.io import *
+from audiosignal_old.io import *
 
 TEST_SIGNAL = Signal(sample_rate=44100, samples=[0.0, 0.1, 0.2, 0.43])
 
@@ -76,7 +76,7 @@ class WaveTest(unittest.TestCase):
             self.assertAlmostEquals(math.sin(omega * t), s.samples[i], delta=0.001)
 
     def test_dump_signal(self):
-        with patch("audiosignal.io.open", mock_open(), create=True) as mock_file:
+        with patch("audiosignal_old.io.open", mock_open(), create=True) as mock_file:
             dump_signal(TEST_SIGNAL, "/path/to/test.signal")
             mock_file.assert_called_once_with("/path/to/test.signal", "w")
             expected_calls = [call(["{}\n".format(TEST_SIGNAL.sample_rate)]),
@@ -84,7 +84,7 @@ class WaveTest(unittest.TestCase):
             self.assertEquals(expected_calls, mock_file.return_value.writelines.mock_calls)
 
     def test_load_signal(self):
-        with patch("audiosignal.io.open", mock_open(read_data=TEST_SIGNAL_FILE), create=True) as mock_file:
+        with patch("audiosignal_old.io.open", mock_open(read_data=TEST_SIGNAL_FILE), create=True) as mock_file:
             signal = load_signal("/path/to/test.signal")
             mock_file.assert_called_once_with("/path/to/test.signal", "r")
             self.assertEquals(TEST_SIGNAL.sample_rate, signal.sample_rate)

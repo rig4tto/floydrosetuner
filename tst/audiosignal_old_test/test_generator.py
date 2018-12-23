@@ -16,7 +16,7 @@
 
 import unittest
 
-from audiosignal.generator import *
+from audiosignal_old.generator import *
 
 
 class GeneratorTest(unittest.TestCase):
