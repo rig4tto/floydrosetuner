@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.io import wavfile
 from scipy.signal import butter, lfilter, find_peaks
-import logging
 
 
 class NotesReader(object):
@@ -45,6 +44,9 @@ class NotesReader(object):
         clean_signal = lfilter(self.pre_processing_band_filter[0], self.pre_processing_band_filter[1], audio_signal)
         return clean_signal
 
+    def compute_avg_power(self, audio_signal):
+        return np.sqrt(np.average(np.square(audio_signal)))
+
     def compute_power_signal(self, audio_signal, power_mem_sec = 0.1):
         power_signal = np.square(audio_signal)
         power_signal_smooth = np.zeros(len(power_signal))
@@ -74,7 +76,7 @@ class NotesReader(object):
 
     def find_main_tone(self, audio_signal):
         spectrum = np.abs(np.fft.fft(audio_signal))
-        idx_to_freq = self.sample_rate * np.fft.fftfreq(len(spectrum))
+        idx_to_freq = float(self.sample_rate) * np.fft.fftfreq(len(spectrum))
         spectrum_max = spectrum[np.argmax(spectrum)]
         min_peaks_height = spectrum_max * 0.3
         peaks, _ = find_peaks(spectrum, min_peaks_height)
