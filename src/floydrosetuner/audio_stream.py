@@ -2,6 +2,8 @@ import logging
 import sounddevice as sd
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 
 DEFAULT_SAMPLE_RATE = 44100
 DEFAULT_AUDIO_FORMAT = np.float32
@@ -20,7 +22,7 @@ class AudioStream(object):
         self.processing_rate = float(sample_rate) / float(self.chunk_size)
         self.stream = sd.Stream(channels=1, dtype=audio_format, samplerate=sample_rate)
         self.buffer = np.zeros(self.buffer_len, audio_format)
-        logging.info("chunk size %r, expected processing rate %r", self.chunk_size, self.processing_rate)
+        logger.info("chunk size %r, expected processing rate %r", self.chunk_size, self.processing_rate)
 
     def __enter__(self):
         self.stream.__enter__()
@@ -35,10 +37,10 @@ class AudioStream(object):
         if len(indata[:, 0]) > 0:
             self.buffer = np.concatenate((self.buffer, single_channel_in_data))[len(single_channel_in_data):]
         if overflowed:
-            logging.warning("overflowed while reading from sound card")
+            logger.warning("overflowed while reading from sound card")
         return indata
 
     def write(self, data):
         underflowed = self.stream.write(data)
         if underflowed:
-            logging.warning("underflowed while writing to sound card")
+            logger.warning("underflowed while writing to sound card")
