@@ -51,14 +51,14 @@ class BandPeakFinder(object):
             assert b[0] < b[1]
             assert min_idx < max_idx
             self.bands_idx.append((min_idx, max_idx))
-            logger.info("Band %r - %r (idx %r - %r)",
-                        self.idx_to_freq[min_idx], self.idx_to_freq[max_idx], min_idx, max_idx)
+            logger.debug("Band %r - %r (idx %r - %r)",
+                         self.idx_to_freq[min_idx], self.idx_to_freq[max_idx], min_idx, max_idx)
 
     def process(self, source_signal, **other_signals):
         bands_peak = []
         if len(source_signal) > 0:
             min_peaks_height = len(source_signal) * self.min_absolute_peak_height
-            logging.info("finding bands peaks for %r samples %r fft size", len(source_signal), self.fft_size)
+            logging.debug("finding bands peaks for %r samples %r fft size", len(source_signal), self.fft_size)
             spectrum = np.fft.fft(source_signal, self.fft_size)
             spectrum_amp = np.abs(spectrum)
             for band in self.bands_idx:

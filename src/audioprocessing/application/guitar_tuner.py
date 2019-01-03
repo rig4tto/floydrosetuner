@@ -42,13 +42,16 @@ SIX_STRINGS_GUITAR_BANDS = [(p.add_semitones(-BAND_SIZE).frequency, p.add_semito
 
 
 def update_console_output(split_sound, bands_peak, **other_signals):
-    if len(bands_peak) > 0 and len([p for p in bands_peak if p is None]) == 0:
-        logger.info("found sound of length %r having band picks %r", len(split_sound), bands_peak)
-        for i in range(len(bands_peak)):
-            expected_pitch = SIX_STRINGS_GUITAR_STANDARD_TUNING[i]
-            actual_pitch = Pitch(bands_peak[i])
-            error_in_semitones = actual_pitch.offset_from_c0 - expected_pitch.offset_from_c0
-            logging.info("String %r - error = %r semitones, found %r", i, error_in_semitones, actual_pitch)
+    if len(split_sound) > 0:
+        if len(bands_peak) > 0 and len([p for p in bands_peak if p is None]) == 0:
+            logger.info("found sound of length %r having band picks %r", len(split_sound), bands_peak)
+            for i in range(len(bands_peak)):
+                expected_pitch = SIX_STRINGS_GUITAR_STANDARD_TUNING[i]
+                actual_pitch = Pitch(bands_peak[i])
+                error_in_semitones = actual_pitch.offset_from_c0 - expected_pitch.offset_from_c0
+                logging.info("String %r - error = %r semitones, found %r", i, error_in_semitones, actual_pitch)
+        else:
+            logging.warning("Could not detect all the strings")
 
 
 class NotesTranscriber(SingleSourceApplication):
