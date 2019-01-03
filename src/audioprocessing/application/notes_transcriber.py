@@ -17,27 +17,31 @@
 import logging
 from audioprocessing.application.application import SingleSourceApplication
 from audioprocessing.processor.spectrum_analyzer import SpectrumAnalyzer
-from audioprocessing.model.pitch import Pitch
+from audioprocessing.processor.pitch_tracker import PitchTracker
 
 
 logger = logging.getLogger(__name__)
 
 
-def update_console_output(spectrum_peaks_freq, pitches, **other_signals):
-    if len(pitches) > 0:
-        logger.info("peaks: %r", pitches)
+def update_console_output(started_pitches, **other_signals):
+    if len(started_pitches) > 0:
+        logger.info(started_pitches)
 
 
 class NotesTranscriber(SingleSourceApplication):
-    def __init__(self, audio_source, update_output=update_console_output, **kvargs):
+    def __init__(self, audio_source, update_output=update_console_output, monophonic=True, **kvargs):
         super().__init__(audio_source, update_output, **kvargs)
+        self.monophonic = monophonic
 
     def _init(self):
         self.spectrum_analyzer = SpectrumAnalyzer(self.audio_source.get_sample_rate())
+        self.pitch_tracker = PitchTracker()
 
     def _run_once(self, signals):
         signals.update(self.spectrum_analyzer.process(**signals))
-        signals["pitches"] = [Pitch(p) for p in signals["spectrum_peaks_freq"]]
+        if self.monophonic:
+            signals["pitches"] = signals["pitches"][0:1]
+        signals.update(self.pitch_tracker.process(**signals))
 
 
 if __name__ == '__main__':

@@ -23,21 +23,31 @@ class SingleSourceApplication(object):
     def __init__(self, audio_source, update_output, **_kvargs):
         self.audio_source = audio_source
         self.update_output = update_output
+        self.iteration = 0
+        self.current_sample = 0
+        self.t =0
 
     def run(self):
-        iterations = 0
         with self.audio_source:
             self._init()
             logger.info("Starting application")
             while not self.audio_source.eos():
                 self.run_once()
-                iterations += 1
-        logger.info("Application completed after %d iterations", iterations)
+        logger.info("Application completed after %d iterations", self.iteration)
 
     def run_once(self):
-        signals = self.audio_source.read()
+        signals = {
+            "iteration": self.iteration,
+            "current_sample": self.current_sample,
+            "t": self.t,
+        }
+        signals.update(self.audio_source.read())
+        samples_read = len(signals["source_signal"])
         self._run_once(signals)
         self.update_output(**signals)
+        self.iteration += 1
+        self.current_sample += samples_read
+        self.t = self.current_sample * self.audio_source.get_sample_rate()
         return signals
 
     def _init(self):
