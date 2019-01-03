@@ -16,7 +16,7 @@
 
 import unittest
 
-from floydrosetuner.pitch import Pitch, MIN_FREQUENCY, MAX_FREQUENCY
+from audioprocessing.model.pitch import Pitch, MIN_FREQUENCY, MAX_FREQUENCY
 
 
 class NoteTest(unittest.TestCase):
@@ -36,4 +36,4 @@ class NoteTest(unittest.TestCase):
             Pitch(MAX_FREQUENCY + 1)
 
     def test_parse(self):
-        self.assertEqual(440.0, Pitch.parse("A").frequency)
+        self.assertAlmostEqual(440.0, Pitch.parse("A").frequency, delta=0.0000001)

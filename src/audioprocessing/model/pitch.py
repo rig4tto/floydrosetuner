@@ -70,6 +70,7 @@ class Pitch(object):
         self.note = SEMITONE_TO_NOTE[self.semitone]
         self.nominal_frequency = Pitch.frequency_from_octave_semitone(self.octave, self.semitone)
         self.error = frequency - self.nominal_frequency
+        self.error_in_semitones = self.offset_from_c0 - float(self.idx)
 
     @staticmethod
     def from_octave_semitone(octave, semitone):
@@ -82,8 +83,16 @@ class Pitch(object):
     def __repr__(self):
         s = "{}{}".format(self.note, self.octave)
         if abs(self.error) > 0.001:
-            s += " err {} Hz".format(self.error)
+            s += " err {}/100".format(int(self.error_in_semitones * 100.0))
         return s
+
+    def __eq__(self, other):
+        if isinstance(other, Pitch):
+            return self.nominal_frequency == other.nominal_frequency
+        return False
+
+    def __hash__(self):
+        return hash(self.nominal_frequency)
 
     @staticmethod
     def _re_groups_to_pitch(groups):
