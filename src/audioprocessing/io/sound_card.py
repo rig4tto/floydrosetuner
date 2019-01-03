@@ -60,6 +60,7 @@ class SoundCard(object):
         if overflowed:
             logger.warning("Overflowed while reading from sound card (%r)", overflowed)
         return {
+            "sample_rate": self.sample_rate,
             "source_signal": first_channel,
             "source_signal_all_channels": input_data,
         }

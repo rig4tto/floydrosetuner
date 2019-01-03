@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 DEFAULT_FFT_RESOLUTION_HZ = 1.0 / 4.0
 DEFAULT_FFT_MIN_RELATIVE_PEAK_HEIGHT = 1.0 / 3.0
 DEFAULT_FFT_MIN_ABSOLUTE_PEAK_HEIGHT = 0.001
-DEFAULT_MIN_FREQ_HZ = Pitch.parse("E2").frequency
-DEFAULT_MAX_FREQ_HZ = Pitch.parse("E6").frequency
+DEFAULT_MIN_FREQ_HZ = Pitch.parse("D2").frequency
+DEFAULT_MAX_FREQ_HZ = Pitch.parse("F6").frequency
 
 
 class SpectrumAnalyzer(object):

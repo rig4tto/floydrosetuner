@@ -26,7 +26,7 @@ class PitchTracker(object):
         self.max_delta = max_delta
         self.current_pitches = {}
 
-    def process(self, pitches, iteration, **other_signals):
+    def process(self, pitches, current_sample, **other_signals):
         ongoing_pitches = {}
         started_pitches = {}
         for p in pitches:
@@ -37,7 +37,7 @@ class PitchTracker(object):
                     found = True
                     break
             if not found:
-                started_pitches[p] = iteration
+                started_pitches[p] = current_sample
         finished_pitches = {p: v for p,v in self.current_pitches.items() if p not in ongoing_pitches.keys()}
         self.current_pitches = {}
         self.current_pitches.update(ongoing_pitches)

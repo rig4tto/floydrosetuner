@@ -61,6 +61,7 @@ class WavFileReader(object):
             self.cursor += self.chunk_size
         return {
             "source_signal": data,
+            "sample_rate": self.sample_rate,
         }
 
 

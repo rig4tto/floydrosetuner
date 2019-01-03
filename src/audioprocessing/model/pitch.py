@@ -80,6 +80,11 @@ class Pitch(object):
     def frequency_from_octave_semitone(octave, semitone):
         return FREQ_C0 * 2.0 ** (float(octave) + float(semitone) / 12.0)
 
+    def add_semitones(self, semitones):
+        new_offset_from_c0 = self.offset_from_c0 + semitones
+        new_frequency = FREQ_C0 * 2**(new_offset_from_c0 / 12.0)
+        return Pitch(new_frequency)
+
     def __repr__(self):
         s = "{}{}".format(self.note, self.octave)
         if abs(self.error) > 0.001:

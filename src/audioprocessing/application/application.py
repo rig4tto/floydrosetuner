@@ -55,3 +55,10 @@ class SingleSourceApplication(object):
 
     def _run_once(self, signals):
         raise Exception("_run_once should be overridden")
+
+    @staticmethod
+    def remap(d, mapping):
+        d = {k: v for k,v in d.items()}
+        for r, o in mapping.items():
+            d[r] = d[o]
+        return d
