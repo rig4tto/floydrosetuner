@@ -31,7 +31,7 @@ def update_console_output(notes, **other_signals):
 
 
 class NotesTranscriber(SingleSourceApplication):
-    def __init__(self, audio_source, update_output=update_console_output, monophonic=True, **kvargs):
+    def __init__(self, audio_source, update_output=update_console_output, monophonic=False, **kvargs):
         super().__init__(audio_source, update_output, **kvargs)
         self.monophonic = monophonic
 

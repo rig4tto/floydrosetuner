@@ -27,16 +27,16 @@ class Buffer(object):
         self.buffer_len = int(buffer_duration * sample_rate)
         self.buffer_duration = float(self.buffer_len) / float(sample_rate)
         self.buffered_signal = None
-        self.buffered_signal_start = 0
+        self.buffered_signal_start = -self.buffer_len
 
     def process(self, source_signal, **other_signals):
         if source_signal is None or len(source_signal) == 0:
             logger.warning("empty source signal")
             return {}
         if self.buffered_signal is None:
-            self.buffered_signal = source_signal
-        else:
-            self.buffered_signal = np.concatenate([self.buffered_signal, source_signal])
+            self.buffered_signal = np.zeros(self.buffer_len, dtype=source_signal.dtype)
+
+        self.buffered_signal = np.concatenate([self.buffered_signal, source_signal])
 
         overflow = len(self.buffered_signal) - self.buffer_len
         if overflow >= 0:

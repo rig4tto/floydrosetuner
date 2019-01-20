@@ -36,6 +36,8 @@ class WavFileReader(object):
     def __enter__(self):
         logger.info("Loading wav file %r", self.filename)
         self.sample_rate, self.audio_signal = wavfile.read(self.filename)
+        if len(self.audio_signal.shape) > 1 and  self.audio_signal.shape[1]> 1:
+            self.audio_signal = self.audio_signal[:, 0]
         self.chunk_size = int(self.sample_rate / self.processing_rate)
         self.processing_rate = float(self.sample_rate) / float(self.chunk_size)
         self.cursor = 0
@@ -57,7 +59,7 @@ class WavFileReader(object):
     def read(self):
         data = []
         if self.cursor < len(self.audio_signal):
-            data = self.audio_signal[self.cursor:self.cursor + self.chunk_size]
+            data = np.ascontiguousarray(self.audio_signal[self.cursor:self.cursor + self.chunk_size])
             self.cursor += self.chunk_size
         return {
             "source_signal": data,
